@@ -2,12 +2,13 @@ package tech.ikora.selenium.locator.evolution.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.net.URL;
 import java.util.Date;
 import java.util.Set;
 
 public class GitConfiguration {
-    @JsonProperty(value = "locations", required = true)
-    private Set<String> locations;
+    @JsonProperty(value = "repositories", required = true)
+    private Set<URL> repositories;
     @JsonProperty(value = "branch", defaultValue = "master")
     private String branch = "master";
     @JsonProperty(value = "token", required = true)
@@ -21,12 +22,12 @@ public class GitConfiguration {
     @JsonProperty(value = "maximum number of commits", defaultValue = "0")
     private int maximumCommitsNumber = 0;
 
-    public Set<String> getLocations() {
-        return locations;
+    public Set<URL> getRepositories() {
+        return repositories;
     }
 
-    public void setLocations(Set<String> locations) {
-        this.locations = locations;
+    public void setRepositories(Set<URL> repositories) {
+        this.repositories = repositories;
     }
 
     public String getBranch() {
