@@ -8,6 +8,12 @@ public class Configuration {
     @JsonProperty(value = "port")
     private int port;
 
+    @JsonProperty(value = "database connection jar")
+    private File databaseConnectionJar;
+
+    @JsonProperty(value = "agent jar")
+    private File agentJar;
+
     @JsonProperty(value = "output database")
     private File outputDatabase;
 
@@ -23,6 +29,22 @@ public class Configuration {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public File getDatabaseConnectionJar() {
+        return databaseConnectionJar;
+    }
+
+    public void setDatabaseConnectionJar(File databaseConnectionJar) {
+        this.databaseConnectionJar = databaseConnectionJar;
+    }
+
+    public File getAgentJar() {
+        return agentJar;
+    }
+
+    public void setAgentJar(File agentJar) {
+        this.agentJar = agentJar;
     }
 
     public File getOutputDatabase() {

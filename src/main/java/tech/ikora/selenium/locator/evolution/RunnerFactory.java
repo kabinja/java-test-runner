@@ -1,7 +1,6 @@
 package tech.ikora.selenium.locator.evolution;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
 import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
@@ -24,10 +23,12 @@ import java.util.List;
 public class RunnerFactory {
     public static Runner fromConfiguration(Configuration configuration) throws GitAPIException, IOException, InvalidGitRepositoryException {
         final int port = configuration.getPort();
+        final File dbConnectJar = configuration.getDatabaseConnectionJar();
+        final File agentJar = configuration.getAgentJar();
         final File database = configuration.getOutputDatabase();
         final VersionProvider versionProvider = createVersionProvider(configuration);
 
-        return new Runner(versionProvider, database, port);
+        return new Runner(versionProvider, agentJar, dbConnectJar, database, port);
     }
 
     private static VersionProvider createVersionProvider(Configuration configuration) throws GitAPIException, IOException, InvalidGitRepositoryException {
