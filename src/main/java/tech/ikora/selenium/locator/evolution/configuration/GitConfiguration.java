@@ -1,8 +1,10 @@
 package tech.ikora.selenium.locator.evolution.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import tech.ikora.gitloader.git.Frequency;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
@@ -18,9 +20,11 @@ public class GitConfiguration {
     @JsonProperty(value = "end date")
     private Date endDate;
     @JsonProperty(value = "ignore commits")
-    private Set<String> ignoreCommits;
+    private Set<String> ignoreCommits = Collections.emptySet();
     @JsonProperty(value = "maximum number of commits", defaultValue = "0")
     private int maximumCommitsNumber = 0;
+    @JsonProperty(value = "frequency", defaultValue = "UNIQUE")
+    private Frequency frequency = Frequency.UNIQUE;
 
     public Set<URL> getRepositories() {
         return repositories;
@@ -76,5 +80,13 @@ public class GitConfiguration {
 
     public void setMaximumCommitsNumber(int maximumCommitsNumber) {
         this.maximumCommitsNumber = maximumCommitsNumber;
+    }
+
+    public Frequency getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(Frequency frequency) {
+        this.frequency = frequency;
     }
 }

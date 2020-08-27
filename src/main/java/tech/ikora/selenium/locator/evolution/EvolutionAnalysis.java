@@ -13,7 +13,7 @@ public class EvolutionAnalysis {
 
     public static void main(String[] args){
         try{
-            final Configuration configuration = loadConfiguration(args);
+            RunnerFactory.fromConfiguration(loadConfiguration(args)).execute();
         } catch (Exception e){
             logger.error(String.format("Exit with error: %s", e.getMessage()));
             System.exit(1);

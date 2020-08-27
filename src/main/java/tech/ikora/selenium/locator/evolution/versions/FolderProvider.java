@@ -62,7 +62,7 @@ public class FolderProvider implements VersionProvider {
                 return new Version(subFolder, date, commitId);
             }
 
-            List<File> getSubFolders(){
+            private List<File> getSubFolders(){
                 return Stream.of(Objects.requireNonNull(rootFolder.listFiles(
                             (File current, String name) -> new File(current, name).isDirectory())
                         ))

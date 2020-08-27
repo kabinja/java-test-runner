@@ -1,5 +1,6 @@
 package tech.ikora.selenium.locator.evolution;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
@@ -47,12 +48,13 @@ public class RunnerFactory {
 
     private static VersionProvider createGitProvider(GitConfiguration configuration) throws GitAPIException, IOException, InvalidGitRepositoryException {
         final GitProvider provider = new GitProvider();
+        final File tmpFolder = getTmpFolder();
 
         for(URL repository: configuration.getRepositories()){
-            final File repositoryFolder = new File(provider.getTmpFolder(), GitUtils.extractProjectName(repository.getPath()));
+            final File repositoryFolder = new File(tmpFolder, GitUtils.extractProjectName(repository.toString()));
 
             final LocalRepository localRepository = GitUtils.loadCurrentRepository(
-                    repository.getPath(),
+                    repository.toString(),
                     configuration.getToken(),
                     repositoryFolder,
                     configuration.getBranch()
@@ -76,5 +78,19 @@ public class RunnerFactory {
 
     private static VersionProvider createFolderProvider(FolderConfiguration configuration) {
         return new FolderProvider(configuration.getRootFolder(), configuration.getNameFormat(), configuration.getDateFormat());
+    }
+
+    private static File getTmpFolder() throws IOException {
+        File tmpFolder = new File(System.getProperty("java.io.tmpdir"), "git-provider");
+
+        if(tmpFolder.exists()){
+            FileUtils.deleteDirectory(tmpFolder);
+        }
+
+        if(!tmpFolder.mkdir()){
+            throw new IOException(String.format("Failed to create directory: %s", tmpFolder.getAbsolutePath()));
+        }
+
+        return tmpFolder;
     }
 }

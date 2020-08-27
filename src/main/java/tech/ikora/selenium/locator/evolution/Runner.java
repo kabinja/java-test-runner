@@ -18,7 +18,6 @@ public class Runner {
 
     public void execute(){
 
-
         for(Version version: versionProvider){
 
         }
