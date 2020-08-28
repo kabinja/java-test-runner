@@ -17,20 +17,34 @@ import java.util.*;
 public class GitProvider implements VersionProvider {
     private static final Logger logger = LogManager.getLogger(GitProvider.class);
 
-    private File tmpFolder;
     private final Map<LocalRepository, List<GitCommit>> repositories;
+    private final File tmpFolder;
 
-    public GitProvider() {
+    public GitProvider(File tmpFolder) {
+        this.tmpFolder = tmpFolder;
         this.repositories = new HashMap<>();
     }
 
-    public void addRepository(LocalRepository localRepository, List<GitCommit> commits) {
+    public void addRepository(LocalRepository localRepository, List<GitCommit> commits) throws IOException {
+        boolean isInTmp = localRepository.getLocation().getCanonicalPath()
+                .contains(this.tmpFolder.getCanonicalPath() + File.separator);
+
+        if(!isInTmp){
+            throw new IOException(String.format("Cannot work with a local repository [%s] not contained in main tmp folder [%s]",
+                    localRepository.getLocation().getAbsolutePath(),
+                    this.tmpFolder.getAbsolutePath()
+            ));
+        }
+
         this.repositories.put(localRepository, commits);
     }
 
     @Override
     public void clean() throws IOException {
         for(LocalRepository localRepository: repositories.keySet()){
+            if(localRepository == null) continue;
+            if(localRepository.getGit() == null) continue;
+            if(localRepository.getGit().getRepository() == null) continue;
             localRepository.getGit().getRepository().close();
         }
 

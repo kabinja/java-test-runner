@@ -48,8 +48,8 @@ public class RunnerFactory {
     }
 
     private static VersionProvider createGitProvider(GitConfiguration configuration) throws GitAPIException, IOException, InvalidGitRepositoryException {
-        final GitProvider provider = new GitProvider();
         final File tmpFolder = getTmpFolder();
+        final GitProvider provider = new GitProvider(tmpFolder);
 
         for(URL repository: configuration.getRepositories()){
             final File repositoryFolder = new File(tmpFolder, GitUtils.extractProjectName(repository.toString()));
