@@ -1,5 +1,9 @@
 package tech.ikora.selenium.locator.evolution.process;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import tech.ikora.selenium.locator.evolution.EvolutionAnalysis;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class MavenLauncher extends ProcessLauncher {
+    private static final Logger logger = LogManager.getLogger(MavenLauncher.class);
 
     private final Entries options = new Entries();
     private final Entries extraArguments = new Entries();
@@ -73,6 +78,7 @@ public class MavenLauncher extends ProcessLauncher {
 
         String line;
         while ((line = reader.readLine()) != null){
+            logger.info(line);
             output.append(line);
             output.append("\n");
         }
