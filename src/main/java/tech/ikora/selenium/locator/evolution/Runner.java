@@ -57,6 +57,8 @@ public class Runner {
             }
         } catch (Exception e) {
             logger.error(String.format("Something went wrong: %s", e.getMessage()));
+        } finally {
+            versionProvider.clean();
         }
 
     }

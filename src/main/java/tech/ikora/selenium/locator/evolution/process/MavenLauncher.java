@@ -2,7 +2,6 @@ package tech.ikora.selenium.locator.evolution.process;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tech.ikora.selenium.locator.evolution.EvolutionAnalysis;
 
 import java.io.BufferedReader;
 import java.io.File;
