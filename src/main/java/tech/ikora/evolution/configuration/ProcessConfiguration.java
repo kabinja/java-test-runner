@@ -16,6 +16,8 @@ public class ProcessConfiguration {
     List<Entry> javaToolOptions = Collections.emptyList();
     @JsonProperty(value = "maven options")
     List<Entry> mavenOptions = Collections.emptyList();
+    @JsonProperty(value = "free form parameters")
+    List<String> freeFormParameters = Collections.emptyList();
 
     public String getJavaHome() {
         return javaHome;
@@ -55,5 +57,13 @@ public class ProcessConfiguration {
 
     public void setMavenOptions(List<Entry> mavenOptions) {
         this.mavenOptions = mavenOptions;
+    }
+
+    public List<String> getFreeFormParameters() {
+        return freeFormParameters;
+    }
+
+    public void setFreeFormParameters(List<String> freeFormParameters) {
+        this.freeFormParameters = freeFormParameters;
     }
 }

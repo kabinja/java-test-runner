@@ -50,6 +50,7 @@ public class Runner {
                             .withJavaToolOptions(version.getProcessConfiguration().getJavaToolOptions())
                             .withEnvironmentVariables(version.getProcessConfiguration().getEnvironment())
                             .withJavaParameters(version.getProcessConfiguration().getArguments())
+                            .withFreeFormParameters(version.getProcessConfiguration().getFreeFormParameters())
                             .inDirectory(version.getLocation())
                             .execute();
                 } catch (IOException | InterruptedException | TimeoutException e) {

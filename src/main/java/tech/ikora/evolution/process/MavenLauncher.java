@@ -22,10 +22,12 @@ public class MavenLauncher extends ProcessLauncher {
     private final Entries mavenOptions = new Entries();
     private final Entries environmentVariables = new Entries();
     private final Entries javaParameters = new Entries();
+    private final List<String> freeFormParameters = new ArrayList<>();
     private File directory = null;
     private boolean clean = true;
-    private boolean test = true;
-    private boolean compile = true;
+    private boolean test = false;
+    private boolean compile = false;
+    private boolean install = true;
     private int wallTime = 20;
     private TimeUnit wallTimeUnit = TimeUnit.MINUTES;
 
@@ -54,10 +56,32 @@ public class MavenLauncher extends ProcessLauncher {
         return this;
     }
 
+    public MavenLauncher withJavaParameter(String name, String value){
+        this.javaParameters.put(name, value);
+        return this;
+    }
+
+    public MavenLauncher withJavaParameters(List<Entry> extraParameters){
+        this.javaParameters.putAll(extraParameters);
+        return this;
+    }
+
+    public MavenLauncher withFreeFormParameters(List<String> freeFormParameters){
+        this.freeFormParameters.addAll(freeFormParameters);
+        return this;
+    }
+
+    public MavenLauncher waitFor(int time, TimeUnit timeUnit){
+        this.wallTime = time;
+        this.wallTimeUnit = timeUnit;
+        return this;
+    }
+
     public MavenLauncher inDirectory(File directory){
         this.directory = directory;
         return this;
     }
+
 
     public MavenLauncher clean(boolean clean){
         this.clean = clean;
@@ -74,21 +98,11 @@ public class MavenLauncher extends ProcessLauncher {
         return this;
     }
 
-    public MavenLauncher withJavaParameter(String name, String value){
-        this.javaParameters.put(name, value);
+    public MavenLauncher install(boolean install){
+        this.install = install;
         return this;
     }
 
-    public MavenLauncher withJavaParameters(List<Entry> extraParameters){
-        this.javaParameters.putAll(extraParameters);
-        return this;
-    }
-
-    public MavenLauncher waitFor(int time, TimeUnit timeUnit){
-        this.wallTime = time;
-        this.wallTimeUnit = timeUnit;
-        return this;
-    }
 
     public String execute() throws IOException, InterruptedException, TimeoutException {
         final List<String> command = createCommand();
@@ -170,6 +184,12 @@ public class MavenLauncher extends ProcessLauncher {
         if(test){
             command.add("test");
         }
+
+        if(install){
+            command.add("install");
+        }
+
+        command.addAll(freeFormParameters);
 
         for(Entry entry: javaParameters){
             command.add(entry.format("-D", "="));
