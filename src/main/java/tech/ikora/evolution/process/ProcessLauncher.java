@@ -1,4 +1,4 @@
-package tech.ikora.selenium.locator.evolution.process;
+package tech.ikora.evolution.process;
 
 import java.util.ArrayList;
 import java.util.List;

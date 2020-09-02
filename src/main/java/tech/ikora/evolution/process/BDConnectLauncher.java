@@ -1,4 +1,4 @@
-package tech.ikora.selenium.locator.evolution.process;
+package tech.ikora.evolution.process;
 
 import org.apache.commons.io.FilenameUtils;
 

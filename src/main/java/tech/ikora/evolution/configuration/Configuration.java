@@ -1,4 +1,4 @@
-package tech.ikora.selenium.locator.evolution.configuration;
+package tech.ikora.evolution.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

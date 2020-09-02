@@ -1,7 +1,8 @@
-package tech.ikora.selenium.locator.evolution.process;
+package tech.ikora.evolution.process;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.ikora.evolution.configuration.Entry;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,8 +17,11 @@ import java.util.concurrent.TimeoutException;
 public class MavenLauncher extends ProcessLauncher {
     private static final Logger logger = LogManager.getLogger(MavenLauncher.class);
 
-    private final Entries options = new Entries();
-    private final Entries extraArguments = new Entries();
+    private String javaHome;
+    private final Entries javaToolOptions = new Entries();
+    private final Entries mavenOptions = new Entries();
+    private final Entries environmentVariables = new Entries();
+    private final Entries javaParameters = new Entries();
     private File directory = null;
     private boolean clean = true;
     private boolean test = true;
@@ -25,8 +29,28 @@ public class MavenLauncher extends ProcessLauncher {
     private int wallTime = 20;
     private TimeUnit wallTimeUnit = TimeUnit.MINUTES;
 
+    public MavenLauncher usingJavaVersion(String javaHome){
+        this.javaHome = javaHome;
+        return this;
+    }
+
     public MavenLauncher withMavenOptions(String key, String value){
-        options.put(key, value);
+        mavenOptions.put(key, value);
+        return this;
+    }
+
+    public MavenLauncher withMavenOptions(List<Entry> options){
+        mavenOptions.putAll(options);
+        return this;
+    }
+
+    public MavenLauncher withEnvironmentVariables(List<Entry> environmentVariables){
+        this.environmentVariables.putAll(environmentVariables);
+        return this;
+    }
+
+    public MavenLauncher withJavaToolOptions(List<Entry> javaToolOptions){
+        this.javaToolOptions.putAll(javaToolOptions);
         return this;
     }
 
@@ -50,8 +74,13 @@ public class MavenLauncher extends ProcessLauncher {
         return this;
     }
 
-    public MavenLauncher withExtraParameter(String name, String value){
-        this.extraArguments.put(name, value);
+    public MavenLauncher withJavaParameter(String name, String value){
+        this.javaParameters.put(name, value);
+        return this;
+    }
+
+    public MavenLauncher withJavaParameters(List<Entry> extraParameters){
+        this.javaParameters.putAll(extraParameters);
         return this;
     }
 
@@ -68,7 +97,7 @@ public class MavenLauncher extends ProcessLauncher {
 
         builder.redirectErrorStream(true);
         setDirectory(builder);
-        setMavenOptions(builder);
+        setEnvironment(builder);
 
         final Process process = builder.start();
 
@@ -99,17 +128,29 @@ public class MavenLauncher extends ProcessLauncher {
         }
     }
 
-    private void setMavenOptions(ProcessBuilder builder){
-        if(!options.isEmpty()){
+    private void setEnvironment(ProcessBuilder builder){
+        if(!mavenOptions.isEmpty()){
             Map<String, String> localEnv = builder.environment();
 
-            List<String> mavenOptions = new ArrayList<>();
-
-            for(Entry entry: options){
-                mavenOptions.add(entry.format("-", ":"));
+            if(javaHome != null && new File(javaHome).exists()){
+                localEnv.put("JAVA_HOME", javaHome);
             }
 
-            localEnv.put("MAVEN_OPTS", String.join(" ", mavenOptions));
+            List<String> formattedMavenOptions = new ArrayList<>();
+            for(Entry entry: mavenOptions){
+                formattedMavenOptions.add(entry.format("-", ":"));
+            }
+            localEnv.put("MAVEN_OPTS", String.join(" ", formattedMavenOptions));
+
+            List<String> formattedJavaToolOptions = new ArrayList<>();
+            for(Entry entry: javaToolOptions){
+                formattedJavaToolOptions.add(entry.format("-D", ":"));
+            }
+            localEnv.put("JAVA_TOOL_OPTIONS", String.join(" ", formattedJavaToolOptions));
+
+            for(Entry entry: environmentVariables){
+                localEnv.put(entry.getName(), entry.getValue());
+            }
         }
     }
 
@@ -130,7 +171,7 @@ public class MavenLauncher extends ProcessLauncher {
             command.add("test");
         }
 
-        for(Entry entry: extraArguments){
+        for(Entry entry: javaParameters){
             command.add(entry.format("-D", "="));
         }
 

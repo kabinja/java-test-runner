@@ -1,20 +1,15 @@
-package tech.ikora.selenium.locator.evolution.configuration;
+package tech.ikora.evolution.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import tech.ikora.gitloader.git.Frequency;
 
-import java.net.URL;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
-public class GitConfiguration {
-    @JsonProperty(value = "repositories", required = true)
-    private Set<URL> repositories;
-    @JsonProperty(value = "branch", defaultValue = "master")
-    private String branch = "master";
-    @JsonProperty(value = "token", required = true)
-    private String token;
+public class RepositoryConfiguration {
+    @JsonProperty(value = "location", required = true)
+    String location = "";
     @JsonProperty(value = "start date")
     private Date startDate;
     @JsonProperty(value = "end date")
@@ -25,29 +20,17 @@ public class GitConfiguration {
     private int maximumCommitsNumber = 0;
     @JsonProperty(value = "frequency", defaultValue = "UNIQUE")
     private Frequency frequency = Frequency.UNIQUE;
+    @JsonProperty(value = "branch", defaultValue = "master")
+    private String branch = "master";
+    @JsonProperty(value = "process configuration")
+    private ProcessConfiguration processConfiguration = new ProcessConfiguration();
 
-    public Set<URL> getRepositories() {
-        return repositories;
+    public String getLocation() {
+        return location;
     }
 
-    public void setRepositories(Set<URL> repositories) {
-        this.repositories = repositories;
-    }
-
-    public String getBranch() {
-        return branch;
-    }
-
-    public void setBranch(String branch) {
-        this.branch = branch;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public Date getStartDate() {
@@ -88,5 +71,21 @@ public class GitConfiguration {
 
     public void setFrequency(Frequency frequency) {
         this.frequency = frequency;
+    }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
+    public ProcessConfiguration getProcessConfiguration() {
+        return processConfiguration;
+    }
+
+    public void setProcessConfiguration(ProcessConfiguration process) {
+        this.processConfiguration = process;
     }
 }

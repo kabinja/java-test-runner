@@ -1,15 +1,15 @@
-package tech.ikora.selenium.locator.evolution;
+package tech.ikora.evolution;
 
 import org.apache.commons.cli.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tech.ikora.selenium.locator.evolution.configuration.Configuration;
-import tech.ikora.selenium.locator.evolution.configuration.ConfigurationParser;
+import tech.ikora.evolution.configuration.ConfigurationParser;
+import tech.ikora.evolution.configuration.Configuration;
 
 import java.io.IOException;
 
-public class EvolutionAnalysis {
-    private static final Logger logger = LogManager.getLogger(EvolutionAnalysis.class);
+public class Main {
+    private static final Logger logger = LogManager.getLogger(Main.class);
 
     public static void main(String[] args){
         try{

@@ -1,11 +1,11 @@
-package tech.ikora.selenium.locator.evolution;
+package tech.ikora.evolution;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tech.ikora.selenium.locator.evolution.process.BDConnectLauncher;
-import tech.ikora.selenium.locator.evolution.process.MavenLauncher;
-import tech.ikora.selenium.locator.evolution.versions.Version;
-import tech.ikora.selenium.locator.evolution.versions.VersionProvider;
+import tech.ikora.evolution.versions.Version;
+import tech.ikora.evolution.versions.VersionProvider;
+import tech.ikora.evolution.process.BDConnectLauncher;
+import tech.ikora.evolution.process.MavenLauncher;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,8 +43,13 @@ public class Runner {
                     );
 
                     final String result = new MavenLauncher()
-                            .withExtraParameter("forkMode", "never")
+                            .withJavaParameter("forkMode", "never")
                             .withMavenOptions("javaagent", agent)
+                            .usingJavaVersion(version.getProcessConfiguration().getJavaHome())
+                            .withMavenOptions(version.getProcessConfiguration().getMavenOptions())
+                            .withJavaToolOptions(version.getProcessConfiguration().getJavaToolOptions())
+                            .withEnvironmentVariables(version.getProcessConfiguration().getEnvironment())
+                            .withJavaParameters(version.getProcessConfiguration().getArguments())
                             .inDirectory(version.getLocation())
                             .execute();
                 } catch (IOException | InterruptedException | TimeoutException e) {

@@ -1,4 +1,4 @@
-package tech.ikora.selenium.locator.evolution.versions;
+package tech.ikora.evolution.versions;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -7,6 +7,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import tech.ikora.gitloader.git.GitCommit;
 import tech.ikora.gitloader.git.GitUtils;
 import tech.ikora.gitloader.git.LocalRepository;
+import tech.ikora.evolution.configuration.ProcessConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,14 +19,16 @@ public class GitProvider implements VersionProvider {
     private static final Logger logger = LogManager.getLogger(GitProvider.class);
 
     private final Map<LocalRepository, List<GitCommit>> repositories;
+    private final Map<LocalRepository, ProcessConfiguration> configurationMap;
     private final File tmpFolder;
 
     public GitProvider(File tmpFolder) {
         this.tmpFolder = tmpFolder;
         this.repositories = new HashMap<>();
+        this.configurationMap = new HashMap<>();
     }
 
-    public void addRepository(LocalRepository localRepository, List<GitCommit> commits) throws IOException {
+    public void addRepository(LocalRepository localRepository, ProcessConfiguration processConfiguration, List<GitCommit> commits) throws IOException {
         boolean isInTmp = localRepository.getLocation().getCanonicalPath()
                 .contains(this.tmpFolder.getCanonicalPath() + File.separator);
 
@@ -37,6 +40,7 @@ public class GitProvider implements VersionProvider {
         }
 
         this.repositories.put(localRepository, commits);
+        this.configurationMap.put(localRepository, processConfiguration);
     }
 
     @Override
@@ -93,7 +97,7 @@ public class GitProvider implements VersionProvider {
 
                 final LocalDateTime dateTime = commit.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-                return new Version(current.getLocation(), dateTime, commit.getId());
+                return new Version(current.getLocation(), dateTime, commit.getId(), configurationMap.get(current));
             }
         } ;
     }

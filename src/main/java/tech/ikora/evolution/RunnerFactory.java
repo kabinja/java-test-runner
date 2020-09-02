@@ -1,23 +1,23 @@
-package tech.ikora.selenium.locator.evolution;
+package tech.ikora.evolution;
 
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
+import tech.ikora.evolution.configuration.FolderConfiguration;
+import tech.ikora.evolution.configuration.RepositoryConfiguration;
+import tech.ikora.evolution.versions.FolderProvider;
+import tech.ikora.evolution.versions.GitProvider;
+import tech.ikora.evolution.versions.VersionProvider;
 import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
 import tech.ikora.gitloader.git.CommitCollector;
 import tech.ikora.gitloader.git.GitCommit;
 import tech.ikora.gitloader.git.GitUtils;
 import tech.ikora.gitloader.git.LocalRepository;
-import tech.ikora.selenium.locator.evolution.configuration.Configuration;
-import tech.ikora.selenium.locator.evolution.configuration.FolderConfiguration;
-import tech.ikora.selenium.locator.evolution.configuration.GitConfiguration;
-import tech.ikora.selenium.locator.evolution.versions.FolderProvider;
-import tech.ikora.selenium.locator.evolution.versions.GitProvider;
-import tech.ikora.selenium.locator.evolution.versions.VersionProvider;
+import tech.ikora.evolution.configuration.Configuration;
+import tech.ikora.evolution.configuration.GitConfiguration;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.List;
 
 public class RunnerFactory {
@@ -51,34 +51,34 @@ public class RunnerFactory {
         final File tmpFolder = getTmpFolder();
         final GitProvider provider = new GitProvider(tmpFolder);
 
-        for(URL repository: configuration.getRepositories()){
-            final File repositoryFolder = new File(tmpFolder, GitUtils.extractProjectName(repository.toString()));
+        for(RepositoryConfiguration repository: configuration.getRepositories()){
+            final File repositoryFolder = new File(tmpFolder, GitUtils.extractProjectName(repository.getLocation()));
 
             final LocalRepository localRepository = GitUtils.loadCurrentRepository(
-                    repository.toString(),
+                    repository.getLocation(),
                     configuration.getToken(),
                     repositoryFolder,
-                    configuration.getBranch()
+                    repository.getBranch()
             );
 
             List<GitCommit> commits = new CommitCollector()
                     .forGit(localRepository.getGit())
-                    .onBranch(configuration.getBranch())
-                    .from(configuration.getStartDate())
-                    .to(configuration.getEndDate())
-                    .ignoring(configuration.getIgnoreCommits())
-                    .every(configuration.getFrequency())
-                    .limit(configuration.getMaximumCommitsNumber())
+                    .onBranch(repository.getBranch())
+                    .from(repository.getStartDate())
+                    .to(repository.getEndDate())
+                    .ignoring(repository.getIgnoreCommits())
+                    .every(repository.getFrequency())
+                    .limit(repository.getMaximumCommitsNumber())
                     .collect();
 
-            provider.addRepository(localRepository, commits);
+            provider.addRepository(localRepository, repository.getProcessConfiguration(), commits);
         }
 
         return provider;
     }
 
     private static VersionProvider createFolderProvider(FolderConfiguration configuration) {
-        return new FolderProvider(configuration.getRootFolder(), configuration.getNameFormat(), configuration.getDateFormat());
+        return new FolderProvider(configuration.getRootFolder(), configuration.getNameFormat(), configuration.getDateFormat(), configuration.getProcessConfiguration());
     }
 
     private static File getTmpFolder() throws IOException {

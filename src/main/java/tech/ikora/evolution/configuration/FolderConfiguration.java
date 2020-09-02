@@ -1,4 +1,4 @@
-package tech.ikora.selenium.locator.evolution.configuration;
+package tech.ikora.evolution.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -16,6 +16,8 @@ public class FolderConfiguration {
     NameFormat nameFormat;
     @JsonProperty(value = "date format")
     String dateFormat;
+    @JsonProperty(value = "process configuration")
+    private ProcessConfiguration processConfiguration;
 
     public File getRootFolder() {
         return rootFolder;
@@ -39,5 +41,13 @@ public class FolderConfiguration {
 
     public void setDateFormat(String dateFormat) {
         this.dateFormat = dateFormat;
+    }
+
+    public ProcessConfiguration getProcessConfiguration() {
+        return processConfiguration;
+    }
+
+    public void setProcessConfiguration(ProcessConfiguration processConfiguration) {
+        this.processConfiguration = processConfiguration;
     }
 }

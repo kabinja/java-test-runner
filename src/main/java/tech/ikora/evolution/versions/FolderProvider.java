@@ -1,6 +1,7 @@
-package tech.ikora.selenium.locator.evolution.versions;
+package tech.ikora.evolution.versions;
 
-import tech.ikora.selenium.locator.evolution.configuration.FolderConfiguration;
+import tech.ikora.evolution.configuration.FolderConfiguration;
+import tech.ikora.evolution.configuration.ProcessConfiguration;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -16,11 +17,13 @@ public class FolderProvider implements VersionProvider {
     private final File rootFolder;
     private final FolderConfiguration.NameFormat nameFormat;
     private final String dateFormat;
+    private final ProcessConfiguration processConfiguration;
 
-    public FolderProvider(File rootFolder, FolderConfiguration.NameFormat nameFormat, String dateFormat) {
+    public FolderProvider(File rootFolder, FolderConfiguration.NameFormat nameFormat, String dateFormat, ProcessConfiguration processConfiguration) {
         this.rootFolder = rootFolder;
         this.nameFormat = nameFormat;
         this.dateFormat = dateFormat;
+        this.processConfiguration = processConfiguration;
     }
 
     @Override
@@ -59,7 +62,7 @@ public class FolderProvider implements VersionProvider {
                     default: throw new RuntimeException("nameFormat needs to be either DATE or VERSION");
                 }
 
-                return new Version(subFolder, date, commitId);
+                return new Version(subFolder, date, commitId, processConfiguration);
             }
 
             private List<File> getSubFolders(){

@@ -1,4 +1,4 @@
-package tech.ikora.selenium.locator.evolution.versions;
+package tech.ikora.evolution.versions;
 
 import java.io.IOException;
 
