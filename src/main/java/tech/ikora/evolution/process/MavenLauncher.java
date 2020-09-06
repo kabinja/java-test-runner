@@ -105,13 +105,12 @@ public class MavenLauncher extends ProcessLauncher {
 
 
     public String execute() throws IOException, InterruptedException, TimeoutException {
-        final List<String> command = createCommand();
-
-        final ProcessBuilder builder = new ProcessBuilder(command);
+        final ProcessBuilder builder = new ProcessBuilder(super.initCommand());
 
         builder.redirectErrorStream(true);
         setDirectory(builder);
         setEnvironment(builder);
+        setCommand(builder);
 
         final Process process = builder.start();
 
@@ -168,10 +167,10 @@ public class MavenLauncher extends ProcessLauncher {
         }
     }
 
-    private List<String> createCommand(){
-        final List<String> command = super.initCommand();
+    private void setCommand(ProcessBuilder builder){
+        final List<String> command = new ArrayList<>();
 
-        command.add("mvn");
+        command.add(isWindows() ? "mvn.cmd" : "mvn");
 
         if(clean){
             command.add("clean");
@@ -195,6 +194,6 @@ public class MavenLauncher extends ProcessLauncher {
             command.add(entry.format("-D", "="));
         }
 
-        return command;
+        builder.command(command);
     }
 }

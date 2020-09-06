@@ -6,6 +6,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BDConnectLauncher extends ProcessLauncher implements AutoCloseable {
@@ -22,13 +23,14 @@ public class BDConnectLauncher extends ProcessLauncher implements AutoCloseable 
     }
 
     private void launch() throws IOException {
-        final ProcessBuilder builder = new ProcessBuilder(createCommand());
-        builder.directory(getDirectory());
-        builder.inheritIO().start();
+        new ProcessBuilder(super.initCommand())
+                .directory(getDirectory())
+                .command(createCommand())
+                .inheritIO().start();
     }
 
     private List<String> createCommand(){
-        final List<String> command = super.initCommand();
+        final List<String> command = new ArrayList<>();
 
         command.add("java");
         command.add("-jar");

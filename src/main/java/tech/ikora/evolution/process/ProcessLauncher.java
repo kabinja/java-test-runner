@@ -19,7 +19,9 @@ public abstract class ProcessLauncher {
 
         if(isWindows()){
             command.add("cmd.exe");
-            command.add("/C");
+            command.add("/c");
+            command.add("start");
+            command.add("cmd");
         }
 
         return command;
