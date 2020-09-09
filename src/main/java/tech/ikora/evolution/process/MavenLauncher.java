@@ -187,6 +187,7 @@ public class MavenLauncher extends ProcessLauncher {
 
         if(install){
             command.add("install");
+            command.add("--fail-never");
         }
 
         command.addAll(freeFormParameters);
