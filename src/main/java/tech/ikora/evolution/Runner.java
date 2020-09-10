@@ -43,7 +43,9 @@ public class Runner {
                     );
 
                     final String result = new MavenLauncher()
-                            .withJavaParameter("forkMode", "never")
+                            .withJavaParameter("forkCount", "0")
+                            .withJavaParameter("reuseForks", "true")
+                            .withJavaParameter("maven.test.failure.ignore", "true")
                             .withMavenOptions("javaagent", agent)
                             .usingJavaVersion(version.getProcessConfiguration().getJavaHome())
                             .withMavenOptions(version.getProcessConfiguration().getMavenOptions())

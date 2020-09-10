@@ -1,6 +1,8 @@
 package tech.ikora.evolution;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidConfigurationException;
 import tech.ikora.evolution.configuration.FolderConfiguration;
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.util.List;
 
 public class RunnerFactory {
+    private static final Logger logger = LogManager.getLogger(RunnerFactory.class);
+
     public static Runner fromConfiguration(Configuration configuration) throws GitAPIException, IOException, InvalidGitRepositoryException {
         final int port = configuration.getPort();
         final File dbConnectJar = configuration.getDatabaseConnectionJar();
@@ -54,12 +58,16 @@ public class RunnerFactory {
         for(RepositoryConfiguration repository: configuration.getRepositories()){
             final File repositoryFolder = new File(tmpFolder, GitUtils.extractProjectName(repository.getLocation()));
 
+            logger.info(String.format("Loading repository from %s...", repository.getLocation()));
+
             final LocalRepository localRepository = GitUtils.loadCurrentRepository(
                     repository.getLocation(),
                     configuration.getToken(),
                     repositoryFolder,
                     repository.getBranch()
             );
+
+            logger.info("Repository loaded!");
 
             List<GitCommit> commits = new CommitCollector()
                     .forGit(localRepository.getGit())

@@ -25,7 +25,7 @@ public class MavenLauncher extends ProcessLauncher {
     private final List<String> freeFormParameters = new ArrayList<>();
     private File directory = null;
     private boolean clean = true;
-    private boolean test = false;
+    private boolean test = true;
     private boolean compile = false;
     private boolean install = true;
     private int wallTime = 20;
@@ -186,7 +186,6 @@ public class MavenLauncher extends ProcessLauncher {
 
         if(install){
             command.add("install");
-            command.add("--fail-never");
         }
 
         command.addAll(freeFormParameters);

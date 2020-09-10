@@ -69,8 +69,8 @@ public class RepositoryConfiguration {
         return frequency;
     }
 
-    public void setFrequency(Frequency frequency) {
-        this.frequency = frequency;
+    public void setFrequency(String frequency) {
+        this.frequency = Frequency.valueOf(frequency.toUpperCase());
     }
 
     public String getBranch() {
