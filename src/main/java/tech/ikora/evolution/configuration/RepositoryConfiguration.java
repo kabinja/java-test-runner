@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.Set;
 
 public class RepositoryConfiguration {
+    @JsonProperty(value = "ignore", defaultValue = "false")
+    boolean ignore = false;
     @JsonProperty(value = "location", required = true)
     String location = "";
     @JsonProperty(value = "start date")
@@ -24,6 +26,14 @@ public class RepositoryConfiguration {
     private String branch = "master";
     @JsonProperty(value = "process configuration")
     private ProcessConfiguration processConfiguration = new ProcessConfiguration();
+
+    public boolean isIgnore() {
+        return ignore;
+    }
+
+    public void setIgnore(boolean ignore) {
+        this.ignore = ignore;
+    }
 
     public String getLocation() {
         return location;

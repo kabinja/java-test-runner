@@ -56,6 +56,10 @@ public class RunnerFactory {
         final GitProvider provider = new GitProvider(tmpFolder);
 
         for(RepositoryConfiguration repository: configuration.getRepositories()){
+            if(repository.isIgnore()){
+                continue;
+            }
+
             final File repositoryFolder = new File(tmpFolder, GitUtils.extractProjectName(repository.getLocation()));
 
             logger.info(String.format("Loading repository from %s...", repository.getLocation()));

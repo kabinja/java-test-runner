@@ -22,7 +22,7 @@ public class MavenLauncher extends ProcessLauncher {
     private final Entries mavenOptions = new Entries();
     private final Entries environmentVariables = new Entries();
     private final Entries javaParameters = new Entries();
-    private final List<String> freeFormParameters = new ArrayList<>();
+    private final List<String> profiles = new ArrayList<>();
     private File directory = null;
     private boolean clean = true;
     private boolean test = true;
@@ -66,8 +66,8 @@ public class MavenLauncher extends ProcessLauncher {
         return this;
     }
 
-    public MavenLauncher withFreeFormParameters(List<String> freeFormParameters){
-        this.freeFormParameters.addAll(freeFormParameters);
+    public MavenLauncher usingProfile(List<String> profiles){
+        this.profiles.addAll(profiles);
         return this;
     }
 
@@ -188,10 +188,13 @@ public class MavenLauncher extends ProcessLauncher {
             command.add("install");
         }
 
-        command.addAll(freeFormParameters);
-
         for(Entry entry: javaParameters){
             command.add(entry.format("-D", "="));
+        }
+
+        if(!profiles.isEmpty()){
+            command.add("-P");
+            command.add(String.join(",", profiles));
         }
 
         builder.command(command);
