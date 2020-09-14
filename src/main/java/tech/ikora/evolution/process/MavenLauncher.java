@@ -2,6 +2,7 @@ package tech.ikora.evolution.process;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.ikora.evolution.Runner;
 import tech.ikora.evolution.configuration.Entry;
 
 import java.io.BufferedReader;
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -23,11 +25,8 @@ public class MavenLauncher extends ProcessLauncher {
     private final Entries environmentVariables = new Entries();
     private final Entries javaParameters = new Entries();
     private final List<String> profiles = new ArrayList<>();
+    private List<String> goals = Collections.emptyList();
     private File directory = null;
-    private boolean clean = true;
-    private boolean test = true;
-    private boolean compile = false;
-    private boolean install = true;
     private int wallTime = 20;
     private TimeUnit wallTimeUnit = TimeUnit.MINUTES;
 
@@ -82,27 +81,10 @@ public class MavenLauncher extends ProcessLauncher {
         return this;
     }
 
-
-    public MavenLauncher clean(boolean clean){
-        this.clean = clean;
+    public MavenLauncher forGoals(List<String> goals) {
+        this.goals = goals;
         return this;
     }
-
-    public MavenLauncher compile(boolean compile){
-        this.compile = compile;
-        return this;
-    }
-
-    public MavenLauncher test(boolean test){
-        this.test = test;
-        return this;
-    }
-
-    public MavenLauncher install(boolean install){
-        this.install = install;
-        return this;
-    }
-
 
     public String execute() throws IOException, InterruptedException, TimeoutException {
         final ProcessBuilder builder = new ProcessBuilder(super.initCommand());
@@ -172,21 +154,7 @@ public class MavenLauncher extends ProcessLauncher {
 
         command.add(isWindows() ? "mvn.cmd" : "mvn");
 
-        if(clean){
-            command.add("clean");
-        }
-
-        if(compile){
-            command.add("compile");
-        }
-
-        if(test){
-            command.add("test");
-        }
-
-        if(install){
-            command.add("install");
-        }
+        command.addAll(goals);
 
         for(Entry entry: javaParameters){
             command.add(entry.format("-D", "="));

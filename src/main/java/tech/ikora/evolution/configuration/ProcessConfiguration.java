@@ -18,6 +18,8 @@ public class ProcessConfiguration {
     List<Entry> mavenOptions = Collections.emptyList();
     @JsonProperty(value = "profiles")
     List<String> profiles = Collections.emptyList();
+    @JsonProperty(value = "maven goals")
+    List<String> goals = Collections.emptyList();
 
     public String getJavaHome() {
         return javaHome;
@@ -65,5 +67,13 @@ public class ProcessConfiguration {
 
     public void setProfiles(List<String> freeFormParameters) {
         this.profiles = freeFormParameters;
+    }
+
+    public List<String> getGoals() {
+        return goals;
+    }
+
+    public void setGoals(List<String> goals) {
+        this.goals = goals;
     }
 }

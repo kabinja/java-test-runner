@@ -54,6 +54,7 @@ public class Runner {
                             .withJavaParameters(version.getProcessConfiguration().getArguments())
                             .usingProfile(version.getProcessConfiguration().getProfiles())
                             .inDirectory(version.getLocation())
+                            .forGoals(version.getProcessConfiguration().getGoals())
                             .execute();
                 } catch (IOException | InterruptedException | TimeoutException e) {
                     logger.error(String.format("Failed to execute mvn for %s [%s]: %s",
