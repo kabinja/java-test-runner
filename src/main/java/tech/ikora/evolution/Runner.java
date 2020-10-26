@@ -2,6 +2,8 @@ package tech.ikora.evolution;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import tech.ikora.evolution.communication.Message;
+import tech.ikora.evolution.communication.Sender;
 import tech.ikora.evolution.versions.Version;
 import tech.ikora.evolution.versions.VersionProvider;
 import tech.ikora.evolution.process.BDConnectLauncher;
@@ -35,6 +37,11 @@ public class Runner {
                         version.getLocation(),
                         version.getCommitId()
                 ));
+
+                new Sender("localhost", port)
+                        .addMessage(new Message('p', version.getId()))
+                        .addMessage(new Message('c', version.getCommitId()))
+                        .send();
 
                 try {
                     final String agent = String.format("%s=%d",

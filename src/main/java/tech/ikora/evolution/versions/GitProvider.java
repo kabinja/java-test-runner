@@ -97,7 +97,7 @@ public class GitProvider implements VersionProvider {
 
                 final LocalDateTime dateTime = commit.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
-                return new Version(current.getLocation(), dateTime, commit.getId(), configurationMap.get(current));
+                return new Version(current.getRemoteUrl(), current.getLocation(), dateTime, commit.getId(), configurationMap.get(current));
             }
         } ;
     }

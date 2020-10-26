@@ -62,7 +62,7 @@ public class FolderProvider implements VersionProvider {
                     default: throw new RuntimeException("nameFormat needs to be either DATE or VERSION");
                 }
 
-                return new Version(subFolder, date, commitId, processConfiguration);
+                return new Version(subFolder.getName(), subFolder, date, commitId, processConfiguration);
             }
 
             private List<File> getSubFolders(){

@@ -2,7 +2,6 @@ package tech.ikora.evolution.process;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tech.ikora.evolution.Runner;
 import tech.ikora.evolution.configuration.Entry;
 
 import java.io.BufferedReader;
