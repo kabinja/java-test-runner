@@ -24,12 +24,14 @@ public class Sender {
     }
 
     final public void send() throws IOException {
-        try (Socket socket = new Socket("localhost", port)) {
+        try (Socket socket = new Socket(host, port)) {
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
             for(Message message : messages){
                 sendMessage(out, message);
             }
+
+            out.flush();
         }
     }
 
@@ -37,7 +39,10 @@ public class Sender {
         final byte[] bytes = message.getPayLoad().getBytes(StandardCharsets.UTF_8);
 
         out.writeChar(message.getType());
-        out.writeInt(bytes.length);
-        out.write(bytes);
+
+        if(bytes.length > 0){
+            out.writeInt(bytes.length);
+            out.write(bytes);
+        }
     }
 }

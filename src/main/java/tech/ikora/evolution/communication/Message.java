@@ -9,6 +9,11 @@ public class Message {
         this.payLoad = payLoad;
     }
 
+    public Message(char type){
+        this.type = type;
+        this.payLoad = "";
+    }
+
     public char getType() {
         return type;
     }

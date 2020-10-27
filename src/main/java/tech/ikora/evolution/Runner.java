@@ -39,8 +39,10 @@ public class Runner {
                 ));
 
                 new Sender("localhost", port)
-                        .addMessage(new Message('p', version.getId()))
+                        .addMessage(new Message('v'))
                         .addMessage(new Message('c', version.getCommitId()))
+                        .addMessage(new Message('p', version.getId()))
+                        .addMessage(new Message('t', version.getDate().toString()))
                         .send();
 
                 try {
