@@ -43,6 +43,7 @@ public class Runner {
                         .addMessage(new Message('c', version.getCommitId()))
                         .addMessage(new Message('p', version.getId()))
                         .addMessage(new Message('t', version.getDate().toString()))
+                        .addMessage(new Message('d', version.getDifference()))
                         .send();
 
                 try {

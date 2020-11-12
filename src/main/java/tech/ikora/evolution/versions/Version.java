@@ -10,13 +10,15 @@ public class Version {
     private final File location;
     private final LocalDateTime date;
     private final String commitId;
+    private final String difference;
     private final ProcessConfiguration processConfiguration;
 
-    public Version(String id, File location, LocalDateTime date, String commitId, ProcessConfiguration processConfiguration) {
+    public Version(String id, File location, LocalDateTime date, String commitId, String difference, ProcessConfiguration processConfiguration) {
         this.id = id;
         this.location = location;
         this.date = date;
         this.commitId = commitId;
+        this.difference = difference;
         this.processConfiguration = processConfiguration;
     }
 
@@ -34,6 +36,10 @@ public class Version {
 
     public String getCommitId() {
         return commitId;
+    }
+
+    public String getDifference() {
+        return difference;
     }
 
     public ProcessConfiguration getProcessConfiguration() {
