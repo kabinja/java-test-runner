@@ -11,7 +11,6 @@ import tech.ikora.evolution.process.MavenLauncher;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeoutException;
 
 public class Runner {
     private static final Logger logger = LogManager.getLogger(Runner.class);
@@ -66,7 +65,7 @@ public class Runner {
                             .inDirectory(version.getLocation())
                             .forGoals(version.getProcessConfiguration().getGoals())
                             .execute();
-                } catch (IOException | InterruptedException | TimeoutException e) {
+                } catch (Exception e) {
                     logger.error(String.format("Failed to execute mvn for %s [%s]: %s",
                             version.getLocation(),
                             version.getCommitId(),
