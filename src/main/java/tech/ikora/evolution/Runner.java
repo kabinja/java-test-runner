@@ -2,8 +2,9 @@ package tech.ikora.evolution;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import tech.ikora.evolution.communication.Message;
-import tech.ikora.evolution.communication.Sender;
+import org.example.kelloggs.communication.frame.VersionFrame;
+import org.example.kelloggs.communication.handler.Communication;
+import tech.ikora.evolution.process.Synchronization;
 import tech.ikora.evolution.versions.Version;
 import tech.ikora.evolution.versions.VersionProvider;
 import tech.ikora.evolution.process.BDConnectLauncher;
@@ -30,23 +31,23 @@ public class Runner {
     }
 
     public void execute() throws IOException {
+        final Synchronization synchronization = new Synchronization();
+
         try(final BDConnectLauncher dbConnect = new BDConnectLauncher(dbConnectJar, database, port)){
+            synchronization.register(dbConnect);
+
+            synchronization.waitForInitialization();
+
             for(Version version: versionProvider){
                 logger.info(String.format("Start execution for %s [%s]",
                         version.getLocation(),
                         version.getCommitId()
                 ));
 
-                new Sender("localhost", port)
-                        .addMessage(new Message('v'))
-                        .addMessage(new Message('c', version.getCommitId()))
-                        .addMessage(new Message('p', version.getId()))
-                        .addMessage(new Message('t', version.getDate().toString()))
-                        .addMessage(new Message('d', version.getDifference()))
-                        .send();
+                sendFrame(port, version);
 
                 try {
-                    final String agent = String.format("%s=%d",
+                    final String agent = String.format("%s=localhost,%d",
                             agentJar.getAbsolutePath(),
                             port
                     );
@@ -78,6 +79,11 @@ public class Runner {
         } finally {
             versionProvider.clean();
         }
+    }
 
+    private static void sendFrame(int port, Version version) throws IOException {
+        final VersionFrame frame = new VersionFrame(version.getId(), version.getDate(), version.getCommitId(), "");
+        final Communication communication = new Communication(port, "localhost");
+        communication.send_frame(frame);
     }
 }

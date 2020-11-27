@@ -2,31 +2,36 @@ package tech.ikora.evolution.process;
 
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BDConnectLauncher extends ProcessLauncher implements AutoCloseable {
+public class BDConnectLauncher extends ProcessLauncher implements AutoCloseable, Synchronizable {
     private final int port;
     private final File database;
     private final File jar;
+    private final ProcessListenerThread initializationThread;
 
     public BDConnectLauncher(final File jar, final File database, int port) throws IOException {
         this.jar = jar;
         this.port = port;
         this.database = database;
 
-        launch();
+        this.initializationThread = new ProcessListenerThread(
+                startProcess(),
+                "Database Logger",
+                "Initialized JPA EntityManagerFactory"
+        );
+
+        this.initializationThread.start();
     }
 
-    private void launch() throws IOException {
-        new ProcessBuilder(super.initCommand())
+    private Process startProcess() throws IOException {
+        return new ProcessBuilder(super.initCommand())
                 .directory(getDirectory())
                 .command(createCommand())
-                .inheritIO().start();
+                .start();
     }
 
     private List<String> createCommand(){
@@ -35,10 +40,8 @@ public class BDConnectLauncher extends ProcessLauncher implements AutoCloseable 
         command.add("java");
         command.add("-jar");
         command.add(getJarName());
-        command.add("-port");
-        command.add(String.valueOf(port));
-        command.add("-database");
-        command.add(database.getAbsolutePath());
+        command.add("-Dserver.port=" + port);
+        command.add("-Dspring.datasource.url=jdbc:sqlite:" + database.getAbsolutePath());
 
         return command;
     }
@@ -57,5 +60,10 @@ public class BDConnectLauncher extends ProcessLauncher implements AutoCloseable 
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             out.writeChar('e');
         }
+    }
+
+    @Override
+    public Thread getInitializationThread() {
+        return this.initializationThread;
     }
 }
