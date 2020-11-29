@@ -11,6 +11,10 @@ public class Entries implements Iterable<Entry> {
         entryList = new ArrayList<>();
     }
 
+    public Entries(int size){
+        entryList = new ArrayList<>(size);
+    }
+
     public void put(String key, String value){
         entryList.add(new Entry(key, value));
     }

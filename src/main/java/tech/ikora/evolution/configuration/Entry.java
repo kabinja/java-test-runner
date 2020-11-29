@@ -1,6 +1,7 @@
 package tech.ikora.evolution.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import tech.ikora.evolution.utils.OsUtils;
 
 public class Entry {
     @JsonProperty(value = "name", required = true)
@@ -9,6 +10,11 @@ public class Entry {
     private String value = "";
 
     public Entry(){}
+
+    public Entry(String name){
+        this.name = name;
+        this.value = "";
+    }
 
     public Entry(String name, String value){
         this.name = name;
@@ -31,20 +37,28 @@ public class Entry {
         return value;
     }
 
-    public String format(String prefix, String separator){
-        return format(prefix, separator, "");
-    }
-
     public String format(String separator){
         return format("", separator, "");
     }
 
+    public String format(String prefix, String separator){
+        return format(prefix, separator, "");
+    }
+
     public String format(String prefix, String separator, String suffix){
         if(this.value != null && !this.value.isEmpty()){
-            return String.format("%s%s%s%s%s", prefix, name, separator, value, suffix);
+            return String.format("%s%s%s%s%s", prefix, escapeSpace(name), separator, escapeSpace(value), suffix);
         }
         else{
-            return String.format("%s%s%s", prefix, name, suffix);
+            return String.format("%s%s%s", prefix, escapeSpace(name), suffix);
         }
+    }
+
+    private static String escapeSpace(String raw){
+        if(OsUtils.isWindows()){
+            return raw.replace(" ", "^ ");
+        }
+
+        return raw.replace(" ", "\\ ");
     }
 }

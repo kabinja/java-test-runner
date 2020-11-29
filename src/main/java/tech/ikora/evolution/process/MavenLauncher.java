@@ -3,6 +3,7 @@ package tech.ikora.evolution.process;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import tech.ikora.evolution.configuration.Entry;
+import tech.ikora.evolution.utils.OsUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -151,7 +152,7 @@ public class MavenLauncher extends ProcessLauncher {
     private void setCommand(ProcessBuilder builder){
         final List<String> command = new ArrayList<>();
 
-        command.add(isWindows() ? "mvn.cmd" : "mvn");
+        command.add(OsUtils.isWindows() ? "mvn.cmd" : "mvn");
 
         command.addAll(goals);
 

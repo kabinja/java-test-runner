@@ -1,6 +1,7 @@
 package tech.ikora.evolution.process;
 
 import org.apache.commons.io.FilenameUtils;
+import tech.ikora.evolution.configuration.Entry;
 
 import java.io.*;
 import java.net.Socket;
@@ -39,9 +40,9 @@ public class BDConnectLauncher extends ProcessLauncher implements AutoCloseable,
 
         command.add("java");
         command.add("-jar");
-        command.add(getJarName());
-        command.add("-Dserver.port=" + port);
-        command.add("-Dspring.datasource.url=jdbc:sqlite:" + database.getAbsolutePath());
+        command.add(new Entry(getJarName()).format(""));
+        command.add(new Entry("sever.port", String.valueOf(port)).format("--", "="));
+        command.add(new Entry("spring.datasource.url", "jdbc:sqlite:" + database.getAbsolutePath()).format("--", "="));
 
         return command;
     }
