@@ -37,10 +37,19 @@ public class InputStreamSplitter extends Thread {
                 }
             }
 
-            queues.forEach(q -> q.add(Listener.Message.empty()));
-            reader.close();
         } catch (IOException e) {
-            logger.error(String.format("Something went wrong processing stream: %s", e.getMessage()));
+            logger.error(String.format("Something went wrong processing stream: [%s] %s",
+                    e.getClass().getSimpleName(), e.getMessage())
+            );
+        } finally {
+            queues.forEach(q -> q.add(Listener.Message.empty()));
+            try {
+                reader.close();
+            } catch (IOException e) {
+                logger.error(String.format("Failed to properly close stream: [%s] %s",
+                        e.getClass().getSimpleName(), e.getMessage())
+                );
+            }
         }
     }
 }

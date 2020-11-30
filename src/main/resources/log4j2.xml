@@ -9,7 +9,10 @@
         <Logger name="org.reflections.Reflections" level="ERROR" additivity="false">
             <AppenderRef ref="Console" />
         </Logger>
-        <Root level="INFO">
+        <Logger name="org.eclipse.jgit" level="OFF" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Root level="DEBUG">
             <AppenderRef ref="Console"/>
         </Root>
     </Loggers>

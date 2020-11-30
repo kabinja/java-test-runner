@@ -19,7 +19,7 @@ public class Main {
             System.exit(1);
         }
 
-        logger.info("Finished without error");
+        logger.info("Main process terminated");
     }
 
     static private Configuration loadConfiguration(String[] args) throws ParseException, IOException {

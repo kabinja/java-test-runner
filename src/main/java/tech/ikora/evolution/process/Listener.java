@@ -4,7 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public abstract class Listener extends Thread{
-    private final BlockingQueue<Message> queue = new LinkedBlockingQueue<>(500);
+    private final BlockingQueue<Message> queue = new LinkedBlockingQueue<>();
 
     public BlockingQueue<Message> getQueue() {
         return queue;
