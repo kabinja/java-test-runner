@@ -39,11 +39,19 @@ public class Runner {
 
             synchronization.waitForInitialization();
 
+            if(!dbConnect.isAlive()){
+                throw new IOException("Failed to initial process Database Logger");
+            }
+
             for(Version version: versionProvider){
                 logger.info(String.format("Start execution for %s [%s]",
                         version.getLocation(),
                         version.getCommitId()
                 ));
+
+                if(!dbConnect.isAlive()){
+                    throw new IOException("Process Database Logger crashed");
+                }
 
                 sendFrame(port, version);
 
@@ -79,13 +87,7 @@ public class Runner {
             logger.error(String.format("Something went wrong: %s", e.getMessage()));
         } finally {
             versionProvider.clean();
-            closeBbLogger(port);
         }
-    }
-
-    private static void closeBbLogger(int port) throws IOException {
-        final Communication communication = new Communication("localhost", port);
-        communication.sendFrame(new EndFrame("java-test-runner"));
     }
 
     private static void sendFrame(int port, Version version) throws IOException {
