@@ -83,7 +83,7 @@ public class Runner {
 
     private static void sendFrame(int port, Version version) throws IOException {
         final VersionFrame frame = new VersionFrame(version.getId(), version.getDate(), version.getCommitId(), "");
-        final Communication communication = new Communication(port, "localhost");
-        communication.send_frame(frame);
+        final Communication communication = new Communication("localhost", port);
+        communication.sendFrame(frame);
     }
 }
