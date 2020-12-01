@@ -4,7 +4,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.jetbrains.annotations.NotNull;
 import tech.ikora.evolution.configuration.GitConfiguration;
 import tech.ikora.evolution.configuration.ProcessConfiguration;
 import tech.ikora.evolution.configuration.RepositoryConfiguration;
@@ -47,7 +46,7 @@ public class GitProvider implements VersionProvider {
     }
 
     @Override
-    public @NotNull Iterator<Version> iterator() {
+    public Iterator<Version> iterator() {
         return new Iterator<>() {
             private final Iterator<RepositoryConfiguration> configIterator = configuration.getRepositories().iterator();
 

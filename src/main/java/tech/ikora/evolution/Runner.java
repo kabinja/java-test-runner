@@ -2,7 +2,6 @@ package tech.ikora.evolution;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.example.kelloggs.communication.frame.EndFrame;
 import org.example.kelloggs.communication.frame.VersionFrame;
 import org.example.kelloggs.communication.handler.Communication;
 import tech.ikora.evolution.process.Synchronization;
@@ -92,7 +91,6 @@ public class Runner {
 
     private static void sendFrame(int port, Version version) throws IOException {
         final VersionFrame frame = new VersionFrame(version.getId(), version.getDate(), version.getCommitId(), "");
-        final Communication communication = new Communication("localhost", port);
-        communication.sendFrame(frame);
+        Communication.sendFrame("localhost", port, frame);
     }
 }

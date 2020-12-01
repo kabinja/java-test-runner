@@ -76,8 +76,7 @@ public class BDConnectLauncher extends ProcessLauncher implements AutoCloseable,
 
     @Override
     public void close() throws Exception {
-        final Communication communication = new Communication("localhost", port);
-        communication.sendFrame(new EndFrame("java-test-runner"));
+        Communication.sendFrame("localhost", port, new EndFrame("java-test-runner"));
     }
 
     @Override
