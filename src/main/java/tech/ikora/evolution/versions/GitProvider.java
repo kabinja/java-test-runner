@@ -4,10 +4,16 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.jetbrains.annotations.NotNull;
+import tech.ikora.evolution.configuration.GitConfiguration;
+import tech.ikora.evolution.configuration.ProcessConfiguration;
+import tech.ikora.evolution.configuration.RepositoryConfiguration;
+import tech.ikora.evolution.utils.OsUtils;
+import tech.ikora.gitloader.exception.InvalidGitRepositoryException;
+import tech.ikora.gitloader.git.CommitCollector;
 import tech.ikora.gitloader.git.GitCommit;
 import tech.ikora.gitloader.git.GitUtils;
 import tech.ikora.gitloader.git.LocalRepository;
-import tech.ikora.evolution.configuration.ProcessConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,34 +24,19 @@ import java.util.*;
 public class GitProvider implements VersionProvider {
     private static final Logger logger = LogManager.getLogger(GitProvider.class);
 
-    private final Map<LocalRepository, List<GitCommit>> repositories;
-    private final Map<LocalRepository, ProcessConfiguration> configurationMap;
+    private final GitConfiguration configuration;
     private final File tmpFolder;
+    private final Set<LocalRepository> repositories;
 
-    public GitProvider(File tmpFolder) {
-        this.tmpFolder = tmpFolder;
-        this.repositories = new HashMap<>();
-        this.configurationMap = new HashMap<>();
-    }
-
-    public void addRepository(LocalRepository localRepository, ProcessConfiguration processConfiguration, List<GitCommit> commits) throws IOException {
-        boolean isInTmp = localRepository.getLocation().getCanonicalPath()
-                .contains(this.tmpFolder.getCanonicalPath() + File.separator);
-
-        if(!isInTmp){
-            throw new IOException(String.format("Cannot work with a local repository [%s] not contained in main tmp folder [%s]",
-                    localRepository.getLocation().getAbsolutePath(),
-                    this.tmpFolder.getAbsolutePath()
-            ));
-        }
-
-        this.repositories.put(localRepository, commits);
-        this.configurationMap.put(localRepository, processConfiguration);
+    public GitProvider(GitConfiguration configuration) throws IOException {
+        this.configuration = configuration;
+        this.tmpFolder = OsUtils.getTmpFolder();
+        this.repositories = new HashSet<>();
     }
 
     @Override
     public void clean() throws IOException {
-        for(LocalRepository localRepository: repositories.keySet()){
+        for(LocalRepository localRepository: repositories){
             if(localRepository == null) continue;
             if(localRepository.getGit() == null) continue;
             if(localRepository.getGit().getRepository() == null) continue;
@@ -56,19 +47,19 @@ public class GitProvider implements VersionProvider {
     }
 
     @Override
-    public Iterator<Version> iterator() {
+    public @NotNull Iterator<Version> iterator() {
         return new Iterator<>() {
-            private final Iterator<LocalRepository> projectIterator = repositories.keySet().iterator();
+            private final Iterator<RepositoryConfiguration> configIterator = configuration.getRepositories().iterator();
 
             private Iterator<GitCommit> commitIterator = null;
-            private LocalRepository current = null;
+            private LocalRepository repository = null;
+            private ProcessConfiguration processConfiguration = null;
 
             @Override
             public boolean hasNext() {
                 while(commitIterator == null || !commitIterator.hasNext()){
-                    if(projectIterator.hasNext()){
-                        current = projectIterator.next();
-                        commitIterator = repositories.get(current).iterator();
+                    if(configIterator.hasNext()){
+                        initialize(configIterator.next());
                     }
                     else break;
                 }
@@ -86,22 +77,22 @@ public class GitProvider implements VersionProvider {
                 Version version;
 
                 try {
-                    GitUtils.checkout(current.getGit(), commit.getId());
+                    GitUtils.checkout(repository.getGit(), commit.getId());
 
                     final LocalDateTime dateTime = commit.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
                     version = new Version(
-                            current.getRemoteUrl(),
-                            current.getLocation(),
+                            repository.getRemoteUrl(),
+                            repository.getLocation(),
                             dateTime,
                             commit.getId(),
                             commit.getDifference().getFormatted(),
-                            configurationMap.get(current)
+                            processConfiguration
                     );
                 } catch (GitAPIException | IOException e) {
                     logger.error(String.format("Git API error failed to load commit %s from %s: %s",
                             commit.getId(),
-                            current.getRemoteUrl(),
+                            repository.getRemoteUrl(),
                             e.getMessage()
                     ));
                     return next();
@@ -109,6 +100,58 @@ public class GitProvider implements VersionProvider {
 
                 return version;
             }
-        } ;
+
+            private void initialize(RepositoryConfiguration repository){
+                if(repository.isIgnore()){
+                    reset();
+                    return;
+                }
+
+                try {
+                    processConfiguration = repository.getProcessConfiguration();
+
+                    final File repositoryFolder = new File(tmpFolder, GitUtils.extractProjectName(repository.getLocation()));
+
+                    logger.info(String.format("Loading repository from %s...", repository.getLocation()));
+
+                    this.repository = GitUtils.loadCurrentRepository(
+                            repository.getLocation(),
+                            configuration.getToken(),
+                            repositoryFolder,
+                            repository.getBranch()
+                    );
+
+                    repositories.add(this.repository);
+
+                    logger.info("Repository loaded!");
+
+                    commitIterator = new CommitCollector()
+                            .forGit(this.repository.getGit())
+                            .onBranch(repository.getBranch())
+                            .from(repository.getStartDate())
+                            .to(repository.getEndDate())
+                            .ignoring(repository.getIgnoreCommits())
+                            .every(repository.getFrequency())
+                            .limit(repository.getMaximumCommitsNumber())
+                            .collect().iterator();
+
+                    logger.info("Commits resolved!");
+                } catch (InvalidGitRepositoryException | IOException e) {
+                    logger.error(String.format("Failed to initialize repository '%s': [%s] %s",
+                            repository.getLocation(),
+                            e.getClass().getSimpleName(),
+                            e.getMessage()
+                    ));
+
+                    reset();
+                }
+            }
+
+            private void reset(){
+                this.repository = null;
+                this.commitIterator = null;
+                this.processConfiguration = null;
+            }
+        };
     }
 }
