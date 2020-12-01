@@ -51,7 +51,7 @@ public class RunnerFactory {
         return provider;
     }
 
-    private static VersionProvider createGitProvider(GitConfiguration configuration) throws GitAPIException, IOException, InvalidGitRepositoryException {
+    private static VersionProvider createGitProvider(GitConfiguration configuration) throws IOException, InvalidGitRepositoryException {
         final File tmpFolder = getTmpFolder();
         final GitProvider provider = new GitProvider(tmpFolder);
 

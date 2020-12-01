@@ -83,28 +83,31 @@ public class GitProvider implements VersionProvider {
                 }
 
                 final GitCommit commit = commitIterator.next();
+                Version version;
 
                 try {
                     GitUtils.checkout(current.getGit(), commit.getId());
+
+                    final LocalDateTime dateTime = commit.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+                    version = new Version(
+                            current.getRemoteUrl(),
+                            current.getLocation(),
+                            dateTime,
+                            commit.getId(),
+                            commit.getDifference().getFormatted(),
+                            configurationMap.get(current)
+                    );
                 } catch (GitAPIException | IOException e) {
                     logger.error(String.format("Git API error failed to load commit %s from %s: %s",
                             commit.getId(),
                             current.getRemoteUrl(),
                             e.getMessage()
                     ));
-                    next();
+                    return next();
                 }
 
-                final LocalDateTime dateTime = commit.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-
-                return new Version(
-                        current.getRemoteUrl(),
-                        current.getLocation(),
-                        dateTime,
-                        commit.getId(),
-                        commit.getDifference().getFormatted(),
-                        configurationMap.get(current)
-                );
+                return version;
             }
         } ;
     }
